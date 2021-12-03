@@ -5,15 +5,14 @@ import getLinesFromInput
 fun main() {
     val linesFromInput: List<String> = getLinesFromInput("inputDay2")
 
-    val (x, y) = linesFromInput.map {
+    val position = linesFromInput.map {
         parse(it)
     }.fold(Position(0, 0)) { acc, command ->
         command.apply(acc)
     }
 
-    println(x)
-    println(y)
-    println(x * y)
+    println(position)
+    println(position.x * position.y)
 }
 
 fun parse(value: String): Command {
