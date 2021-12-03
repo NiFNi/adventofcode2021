@@ -1,10 +1,6 @@
-import java.io.File
-import java.io.InputStream
-
 fun main() {
-    val inputStream: InputStream = File("input").inputStream()
-    val intList = mutableListOf<Int>()
-    inputStream.bufferedReader().forEachLine { intList.add(it.toInt()) }
+    val linesFromInput = getLinesFromInput("inputDay1")
+    val intList = linesFromInput.map { it.toInt() }
 
     val sumList = mutableListOf<Int>()
 
