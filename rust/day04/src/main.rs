@@ -80,10 +80,7 @@ impl Bingo {
         .iter()
         .flat_map(|line| line.iter())
         .filter(|field| !field.checked)
-        .fold(0, |current, field| {
-            println!("{}", field.value);
-            current + field.value
-        })
+        .fold(0, |current, field| current + field.value)
     }
 }
 
@@ -135,8 +132,6 @@ fn main() {
             bingo.on_new_number(parsed_number);
         }
         if bingos2.len() == 1 && bingos2.get(0).unwrap().has_bingo() {
-            println!("parsed number: {}", parsed_number);
-            println!("unmarked: {}", bingos2.get(0).unwrap().get_unmarked());
             println!(
                 "Part 2: {}",
                 bingos2.get(0).unwrap().get_unmarked() * parsed_number
