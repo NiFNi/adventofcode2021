@@ -38,25 +38,6 @@ impl Bingo {
             .iter()
             .fold(false, |current, list| current || all_checked(list))
     }
-    fn get_diagonale_right_top<'a>(&'a self) -> Vec<&'a BingoField> {
-        vec![
-            self.line1.get(4).unwrap(),
-            self.line2.get(3).unwrap(),
-            self.line3.get(2).unwrap(),
-            self.line4.get(1).unwrap(),
-            self.line5.get(0).unwrap(),
-        ]
-    }
-
-    fn get_diagonale_left_top<'a>(&'a self) -> Vec<&'a BingoField> {
-        vec![
-            self.line1.get(0).unwrap(),
-            self.line2.get(1).unwrap(),
-            self.line3.get(2).unwrap(),
-            self.line4.get(3).unwrap(),
-            self.line5.get(4).unwrap(),
-        ]
-    }
 
     fn get_lines(&self) -> Vec<Vec<&BingoField>> {
         vec![
