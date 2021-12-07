@@ -27,28 +27,68 @@ impl Line {
         let mut result = Vec::new();
         if self.first.x == self.second.x {
             if self.first.y < self.second.y {
-                for y in self.first.y..self.second.y {
+                for y in self.first.y..self.second.y + 1 {
                     result.push(Point::new(self.first.x, y));
                 };
             } else {
-                for y in self.second.y..self.first.y {
+                for y in self.second.y..self.first.y + 1 {
                     result.push(Point::new(self.first.x, y));
                 };
             }
-        }
-
-        if self.first.y == self.second.y {
+        } else if self.first.y == self.second.y {
             if self.first.x < self.second.x {
-                for x in self.first.x..self.second.x {
+                for x in self.first.x..self.second.x + 1 {
                     result.push(Point::new(x, self.first.y));
                 };
             } else {
-                for x in self.second.x..self.first.x {
+                for x in self.second.x..self.first.x + 1 {
                     result.push(Point::new(x, self.first.y));
                 };
             }
+        } else {
+            result.append(&mut get_diagonale(self.first, self.second));
         }
         result
+    }
+}
+
+fn get_diagonale(lower: Point, higher: Point) -> Vec<Point> {
+    let range = PointRange::new(lower, higher);
+    let mut result: Vec<Point> = range.collect();
+    result.push(higher);
+    result
+}
+
+struct PointRange {
+    start: Point,
+    end: Point,
+}
+
+impl PointRange {
+    fn new(start: Point, end: Point) -> PointRange {
+        PointRange { start, end }
+    }
+}
+
+impl Iterator for PointRange {
+    type Item = Point;
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.start.x == self.end.x {
+            None
+        } else {
+            let result = Some(self.start);
+            if self.start.x < self.end.x {
+                self.start.x += 1;
+            } else {
+                self.start.x -= 1;
+            }
+            if self.start.y < self.end.y {
+                self.start.y += 1;
+            } else {
+                self.start.y -= 1;
+            }
+            result
+        }
     }
 }
 
