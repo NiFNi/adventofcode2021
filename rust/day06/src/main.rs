@@ -1,57 +1,42 @@
-use std::collections::HashMap;
-
 mod commons;
 
 fn main() {
     let input = commons::lines_from_file("input/input");
-
     let input_line = input.iter().next().unwrap();
-    let input_fish: Vec<u8> = input_line
-        .split(",")
-        .map(|value| value.parse().unwrap())
-        .collect();
-
-    let result1 = input_fish
-        .iter()
-        .map(|fish| calculate_number_of_fish(*fish, 80))
-        .reduce(|first, second| first + second);
-    println!("{:?}", result1);
-
-    let mut cache = HashMap::new();
-
-    let result2 = input_fish
-        .iter()
-        .map(|fish| {
-            *cache
-                .entry(fish)
-                .or_insert_with(|| calculate_number_of_fish(*fish, 256))
-        })
-        .reduce(|first, second| first + second);
-
-    println!("{:?}", result2);
+    println!("Part1 {}", calculate(input_line, 80));
+    println!("Part2 {}", calculate(input_line, 256));
 }
 
-fn calculate_number_of_fish(input: u8, days: u16) -> u64 {
-    let mut fishs: Vec<u8> = Vec::new();
-    fishs.push(input);
-    for _ in 1..days {
-        let mut new_fish = 0;
-        for i in 0..fishs.len() {
-            let fish = fishs.get_mut(i).unwrap();
-            if *fish == 1 {
-                new_fish += 1;
-            }
-            if *fish == 0 {
-                *fish = 6
-            } else {
-                *fish -= 1
-            }
-        }
+fn calculate(input: &str, days: usize) -> usize {
+    let mut age_counts: [usize; 9] = [0; 9];
 
-        for _ in 0..new_fish {
-            fishs.push(9)
-        }
+    input
+        .split(",")
+        .map(|s| s.trim().parse().unwrap())
+        .for_each(|age: usize| age_counts[age] += 1);
+
+    for _ in 0..days {
+        age_counts.rotate_left(1);
+        age_counts[6] += age_counts[8];
     }
 
-    fishs.len() as u64
+    return age_counts.iter().sum();
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::calculate;
+
+    const SAMPLE_DATA: &str = "3,4,3,1,2";
+
+    #[test]
+    fn test_1() {
+        assert_eq!(calculate(SAMPLE_DATA, 18), 26);
+        assert_eq!(calculate(SAMPLE_DATA, 80), 5934);
+    }
+
+    #[test]
+    fn test_2() {
+        assert_eq!(calculate(SAMPLE_DATA, 256), 26984457539);
+    }
 }
