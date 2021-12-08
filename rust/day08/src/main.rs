@@ -25,6 +25,7 @@ fn part1(input: &Vec<&str>) -> usize {
 fn part2(input: &Vec<&str>) -> u32 {
     input.iter().map(|value| calculate_value(value)).sum()
 }
+
 fn calculate_value(line: &str) -> u32 {
     let mut splitted = line.split(" | ");
     let first: Vec<&str> = splitted.next().unwrap().split_whitespace().collect();
@@ -36,7 +37,7 @@ fn calculate_value(line: &str) -> u32 {
 
     second
         .split_whitespace()
-        .map(|number| mapping.get(number))
+        .map(|number| mapping.get(sort_string(number).as_str()))
         .collect::<String>()
         .parse()
         .unwrap()
@@ -72,10 +73,17 @@ impl LineMapping {
 
         self.find_0_and_d_and_b(&input);
         self.find_2_and_c_and_f(&input);
+        self.find_6(&input);
+        self.find_9(&input);
+        self.find_3(&input);
+        self.find_5(&input);
     }
 
     fn get(&self, number: &str) -> char {
-        *self.map.get(sort_string(number).as_str()).unwrap()
+        *self
+            .map
+            .get(sort_string(number).as_str())
+            .expect(format!("missing {}", number).as_str())
     }
 
     fn find_by_length(&mut self, input: &Vec<&str>, char: char, length: usize) {
@@ -153,6 +161,66 @@ impl LineMapping {
         self.char_map.insert('c', c.unwrap());
         self.char_map.insert('f', f.unwrap());
     }
+
+    fn find_6(&mut self, input: &Vec<&str>) {
+        let six = input
+            .iter()
+            .filter(|value| value.len() == 6)
+            .find(|value| {
+                let missing_char = "abcdefg"
+                    .chars()
+                    .find(|&char| !value.chars().any(|a| a == char))
+                    .unwrap();
+
+                missing_char == *self.char_map.get(&'c').unwrap()
+            })
+            .unwrap();
+
+        self.map.insert(sort_string(six), '6');
+    }
+
+    fn find_9(&mut self, input: &Vec<&str>) {
+        let nine = input
+            .iter()
+            .filter(|value| value.len() == 6)
+            .find(|value| {
+                let sorted = sort_string(value);
+                sorted != *find_key_for_value(&self.map, '0')
+                    && sorted != *find_key_for_value(&self.map, '6')
+            })
+            .unwrap();
+        self.map.insert(sort_string(nine), '9');
+    }
+
+    fn find_3(&mut self, input: &Vec<&str>) {
+        let three = input
+            .iter()
+            .filter(|value| value.len() == 5)
+            .find(|value| {
+                value
+                    .chars()
+                    .any(|char| char == *self.char_map.get(&'c').unwrap())
+                    && value
+                        .chars()
+                        .any(|char| char == *self.char_map.get(&'f').unwrap())
+            })
+            .unwrap();
+
+        self.map.insert(sort_string(three), '3');
+    }
+
+    fn find_5(&mut self, input: &Vec<&str>) {
+        let five = input
+            .iter()
+            .filter(|value| value.len() == 5)
+            .find(|value| {
+                let sorted = sort_string(value);
+                sorted != *find_key_for_value(&self.map, '3')
+                    && sorted != *find_key_for_value(&self.map, '2')
+            })
+            .unwrap();
+        self.map.insert(sort_string(five), '5');
+    }
 }
 
 fn sort_string(to_sort: &str) -> String {
@@ -185,11 +253,13 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
 
     #[test]
     fn test_1() {
-        assert_eq!(part1(SAMPLE_DATA.lines().collect()), 26);
+        let input: Vec<&str> = SAMPLE_DATA.lines().collect();
+        assert_eq!(part1(&input), 26);
     }
 
     #[test]
     fn test_2() {
-        assert_eq!(part2(SAMPLE_DATA.lines().collect()), 61229);
+        let input: Vec<&str> = SAMPLE_DATA.lines().collect();
+        assert_eq!(part2(&input), 61229);
     }
 }
